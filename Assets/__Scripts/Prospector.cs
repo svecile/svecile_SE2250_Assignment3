@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class Prospector : MonoBehaviour {
 	static public Prospector    S;
-	private ScoreManager SM;
 
 	[Header("Set in Inspector")]
 	public TextAsset            deckXML; 
@@ -284,9 +283,9 @@ public class Prospector : MonoBehaviour {
 	public void CardClicked(CardProspector cd) {
 		// The reaction is determined by the state of the clicked card
 		switch (cd.state) {
-		case eCardState.drawpile:
-			break;
 		case eCardState.target:
+			break;
+		case eCardState.drawpile:
 			// Clicking any card in the drawPile will draw the next card
 			MoveToDiscard(target); // Moves the target to the discardPile
 			MoveToTarget(Draw());  // Moves the next drawn card to the target
@@ -311,7 +310,7 @@ public class Prospector : MonoBehaviour {
 			tableau.Remove(cd); // Remove it from the tableau List
 			MoveToTarget(cd);  // Make it the target card
 			SetTableauFaces(); // Update tableau card face-ups 
-			SM.Event(eScoreEvent.mine);
+			ScoreManager.EVENT(eScoreEvent.mine);
 			FloatingScoreHandler(eScoreEvent.mine);
 			break; 
 		}

@@ -137,27 +137,42 @@ public class Deck : MonoBehaviour {
 		return( null );
 	}
 
-	// Make the Card GameObjects
-	public void MakeCards() {
-		// cardNames will be the names of cards to build
-		// Each suit goes from 1 to 14 (e.g., C1 to C14 for Clubs)
-		cardNames = new List<string>();
-		string[] letters = new string[] {"C","D","H","S"};
-		foreach (string s in letters) {
-			for (int i=0; i<14; i++) {
-				cardNames.Add(s+(i+1));
-			}
-		}
+    // Make the Card GameObjects
+    public void MakeCards()
+    {
+        // cardNames will be the names of cards to build
+        // Each suit goes from 1 to 13 (e.g., C1 to C13 for Clubs)
+        cardNames = new List<string>();
+        string[] letters = new string[] { "C", "D", "H", "S" };
+        foreach (string s in letters)
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                cardNames.Add(s + (i + 1));
+            }
+        }
 
-		// Make a List to hold all the cards
-		cards = new List<Card>();
+        // Make a List to hold all the cards
+        cards = new List<Card>();
 
-		// Iterate through all of the card names that were just made
-		for (int i=0; i<cardNames.Count; i++) {
-			// Make the card and add it to the cards Deck
-			cards.Add ( MakeCard(i) );
-		}
-	}
+        // Iterate through all of the card names that were just made
+        for (int i = 0; i < cardNames.Count; i++)
+        {
+            // Make the card and add it to the cards Deck
+            cards.Add(MakeCard(i));
+        }
+
+        //randomise the deck
+        System.Random random = new System.Random();
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            int j = random.Next(i, cards.Count);
+            Card temporary = cards[i];
+            cards[i] = cards[j];
+            cards[j] = temporary;
+        }
+    }
 
 	private Card MakeCard(int cNum) {                     // a
 		// Create a new Card GameObject
