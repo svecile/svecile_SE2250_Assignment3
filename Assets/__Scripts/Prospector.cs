@@ -106,7 +106,7 @@ public class Prospector : MonoBehaviour {
 		}
 		// Reload the scene in reloadDelay seconds
 		// This will give the score a moment to travel
-		Invoke ("ReloadLevel", reloadDelay);                                 // a
+		Invoke ("ReloadLevel", time: 10.0f);                                 // a
 		// SceneManager.LoadScene("__Prospector_Scene_0"); // Now commented out!
 	} 
 
@@ -291,6 +291,9 @@ public class Prospector : MonoBehaviour {
 			MoveToTarget(Draw());  // Moves the next drawn card to the target
 			UpdateDrawPile();     // Restacks the drawPile
 
+            //print card name to console
+            Debug.Log(cd.suit + cd.rank);
+
 			break;
 
 		case eCardState.tableau:
@@ -304,6 +307,11 @@ public class Prospector : MonoBehaviour {
 				// If it's not an adjacent rank, it's not valid
 				validMatch = false;
 			}
+            if (!AlternatingColor(cd, target))
+                {
+                    validMatch = false;
+                }
+
 			if (!validMatch) return; // return if not valid
 
 			// If we got here, then: Yay! It's a valid card.
@@ -312,7 +320,10 @@ public class Prospector : MonoBehaviour {
 			SetTableauFaces(); // Update tableau card face-ups 
 			ScoreManager.EVENT(eScoreEvent.mine);
 			FloatingScoreHandler(eScoreEvent.mine);
-			break; 
+            
+            //print card name to console
+            Debug.Log(cd.suit + cd.rank);
+            break; 
 		}
 		// Check to see whether the game is over or not
 		CheckForGameOver();
@@ -335,7 +346,7 @@ public class Prospector : MonoBehaviour {
 
 		// Check for remaining valid plays
 		foreach ( CardProspector cd in tableau ) {
-			if (AdjacentRank(cd, target)) {
+			if (AdjacentRank(cd, target) && AlternatingColor(cd, target)) {
 				// If there is a valid play, the game's not over
 				return;
 			}
@@ -368,9 +379,24 @@ public class Prospector : MonoBehaviour {
 		// Otherwise, return false
 		return(false);
 	}
+    //checks to see if cards are alternating color
+    public bool AlternatingColor(CardProspector c0, CardProspector c1)
+    {
+        //checked if either card is Face down
+        if (!c0.faceUp || !c1.faceUp) return (false);
 
-	// Handle FloatingScore movement
-	void FloatingScoreHandler(eScoreEvent evt) {
+        if ((c0.suit == "C" || c0.suit == "S") && (c1.suit == "H" || c1.suit == "D"))
+            return true;
+
+        if ((c0.suit == "H" || c0.suit == "D") && (c1.suit == "C" || c1.suit == "S"))
+            return true;
+
+        return false;
+
+    }
+
+    // Handle FloatingScore movement
+    void FloatingScoreHandler(eScoreEvent evt) {
 		List<Vector2> fsPts;
 		switch (evt) {
 		// Same things need to happen whether it's a draw, a win, or a loss
@@ -415,4 +441,12 @@ public class Prospector : MonoBehaviour {
 		}
 	}
 
+    //for shareing score to twitter
+    public const string TWITTER_ADDRESS = "http://twitter.com/intent/tweet";
+
+    public void ShareToTwitter()
+    {
+        Application.OpenURL(TWITTER_ADDRESS +
+           "?text=" + WWW.EscapeURL("Check out my awesome score:  " + ScoreManager.SCORE));
+    }  
 } 
